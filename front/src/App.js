@@ -63,7 +63,7 @@ function App() {
     const newTodo = { label, isCompleted: false, id: generateUid() };
     const newTodos = [...todos, newTodo];
     axios.post('http://localhost:5000/tasks', newTodo)
-      .then(res => console.log("add success", res))
+      .then(res => console.log("add success", res.data))
       .catch(err => console.log("err: ", err))
     setTodos(newTodos);
   };
