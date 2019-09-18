@@ -1,18 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
+import axios from 'axios';
 
 const generateUid = () => Math.random().toString(36).substr(2,9);
 
+
+
 function Todo({ todo, completeTodo }) {
+  let classNameTodo = "todo"
+  if (todo.isCompleted) {
+    classNameTodo += ' todo-done';
+  }
   return (
     <div
-      className="todo"
-      style={{ textDecoration: todo.isCompleted ? "line-through" : "" }}
+      className={classNameTodo}
+      // style={{ textDecoration: todo.isCompleted ? "line-through" : "" }}
     >
-      {todo.text}
-
+      {todo.label}
       <div>
-        <button onClick={() => completeTodo(todo.id)}>Complete</button>
+        {!todo.isCompleted && <button onClick={() => completeTodo(todo.id)}>Complete</button>}
       </div>
     </div>
   );
@@ -41,18 +47,24 @@ function TodoForm({ addTodo }) {
 }
 
 function App() {
-  console.log('here');
   
-  const [todos, setTodos] = useState([
-    {
-      text: "Learn about React",
-      isCompleted: false,
-      id: generateUid(),
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
 
-  const addTodo = text => {
-    const newTodos = [...todos, { text, isCompleted: false, id: generateUid() }];
+  useEffect(function() {
+    axios.get('http://localhost:5000/tasks')
+      .then(res => {
+        if(res.data.tasks.length > 0) {
+          setTodos(res.data.tasks)
+        }
+      })
+  }, [])
+
+  const addTodo = label => {
+    const newTodo = { label, isCompleted: false, id: generateUid() };
+    const newTodos = [...todos, newTodo];
+    axios.post('http://localhost:5000/tasks', newTodo)
+      .then(res => console.log("add success", res))
+      .catch(err => console.log("err: ", err))
     setTodos(newTodos);
   };
 
@@ -61,11 +73,22 @@ function App() {
     const newTodos = [...todos];
     newTodos[index].isCompleted = true;
     setTodos(newTodos);
+    axios.put('http://localhost:5000/tasks', newTodos[index])
+      .then(res => (console.log("complete todo", res)))
+      .catch(err => console.log("err: ", err))
   };
+
+  const completeCount = () => {
+    const result = todos.filter(todo => {
+      return todo.isCompleted === true
+    })
+    return result.length;
+  }
 
   return (
     <div className="app">
       <h1>TO DOs</h1>
+      <div className="completeCounter">{`complete: ${completeCount()} / total: ${todos.length}`}</div>
       <div className="todo-list">
         {todos.map((todo) => (
           <Todo

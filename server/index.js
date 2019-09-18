@@ -17,8 +17,21 @@ app.get('/', (req, res) => res.send('API'));
 
 const taskStore = {};
 
+app.post('/tasks', (req, res) => {
+    const {id, label, isCompleted} = req.body;
+    if (
+        typeof id !== 'string' ||
+        typeof label !== 'string' ||
+        typeof isCompleted !== 'boolean'
+    ) {
+        return res.status(400).send({error: 'missing required keys'});
+    } else {
+        taskStore[id] = {id, label, isCompleted};
+        res.send(taskStore[id]);
+    } 
+})
+
 app.put('/tasks', (req, res) => {
-    console.log(req.body);
     const {id, label, isCompleted} = req.body;
     if (
         typeof id !== 'string' ||

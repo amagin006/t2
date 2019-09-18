@@ -14,11 +14,37 @@
 .todo {
   background: #fff;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
-  padding: 3px 10px;
+  padding: 3px 10px 3px 25px;
   font-size: 12px;
   margin-bottom: 6px;
   border-radius: 3px;
   display: flex;
   align-items: center;
+  position: relative;
   justify-content: space-between;
+}
+
+.todo.todo.todo-done::before {
+  display: block;
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 5px;
+  width: 8px;
+  height: 3px;
+  transform: translateY(-50%);
+  border-left: 2px solid #fa0c0c;
+  border-bottom: 2px solid #fa0c0c;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+.todo.todo-done {
+  background: #ffb1b1;
+  text-decoration: line-through;
+}
+
+.completeCounter {
+  font-size: 18px;
+  margin-bottom: 20px;
 }
